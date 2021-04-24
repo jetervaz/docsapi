@@ -1,0 +1,116 @@
+{
+    "swagger":"2.0",
+    "info": {
+        "version": "0.1.0",
+        "title": "Docs API",
+        "description": "Manage DOCX templates and generate documents based on them."
+    },
+    "host": "api.populus.pet",
+    "basePath": "/docs/v1",
+    "schemes": [
+        "http"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/templates/{owner}": {
+            "post": {
+                "summary": "Add a new docx template for a given owner.",
+                "operationId": "addTemplate",
+                "tags": [
+                    "Templates"
+                ],
+                "parameters": [
+                    {
+                        "name": "owner",
+                        "in": "path",
+                        "description": "Identifier of the template owner (user, organization, etc).",
+                        "required": true,
+                        "type": "string" 
+                    },
+                    {
+                        "name": "template_file",
+                        "in": "body",
+                        "description": "DOCX Template file item.",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/template_file"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Template item created.",
+                        "schema": {
+                        "type": "object",
+                        "properties": {
+                            "template_id": {
+                            "type": "string"
+                            }
+                        }
+                        }
+                    },
+                    "default": {
+                        "description": "Unexpected error.",
+                        "schema": {
+                        "$ref": "#/definitions/error_response"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "template_file": {
+            "type": "object",
+            "description": "Template file item definition.",
+            "required": [
+                "encoded_file"
+            ],
+            "properties": {
+                "encoded_file": {
+                    "type": "string",
+                    "description": "Base64 encoded DOCX template file."
+                },
+                "schema": {
+                    "type": "object",
+                    "description": "A schema definition for the data to be added to the template."
+                }
+            }
+        },
+        "template_item": {
+            "type": "object",
+            "description": "A docx template item definition.",
+            "required": [
+                "owner",
+                "encoded_file"
+            ],
+            "properties": {
+                "template_id": {
+                    "type": "string",
+                    "description": "Template ID."
+                },
+                "owner": {
+                    "type": "string",
+                    "description": "A string identifier for the owner of the template (user, organization, etc)."
+                },
+                "schema": {
+                    "type": "object",
+                    "description": "A schema definition for the data to be added to the template."
+                }
+            }
+        },
+        "error_response": {
+            "properties": {
+                "error": {
+                "description": "Error message.",
+                "type": "string"
+                }
+            }
+        }
+    }
+}

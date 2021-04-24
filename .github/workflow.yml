@@ -1,0 +1,63 @@
+#
+# Github Actions for Serverless Framework
+#
+# Create AWS_KEY and AWS_SECRET secrets in Github repository settings
+# If you're using env.yml file, store its content as ENV Github secret
+#
+# Master branch will be deployed as DEV and every new tag starting with "v**" (e.g. v1.0, v1.2, v2.0, etc) will be deployed as PROD
+#
+
+
+name: Build and Deploy
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.6
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.6
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8 pytest
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Lint with flake8
+      run: |
+        # stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    - name: Test with pytest
+      run: |
+        pytest
+  deploy-dev:
+    name: Deploy to Dev
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '10.x'
+    - name: Install Serverless Framework
+      run: npm install -g serverless
+    - name: Install Serverless Prune Plugin
+      run: npm install -g serverless-prune-plugin
+    - name: Install Serverless Python Requirements
+      run: npm -g install serverless-python-requirements
+    - name: Set up Python 3.6
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.6
+    - name: Serverless AWS authentication
+      run: sls config credentials --provider aws --key ${{ secrets.AWS_KEY }} --secret ${{ secrets.AWS_SECRET }}
+    - name: AWS Deploy
+      run: sls deploy --stage dev

@@ -1,0 +1,26 @@
+service: docsapi
+
+plugins:
+  - serverless-prune-plugin
+  - serverless-python-requirements
+
+custom:
+  stage: ${opt:stage, self:provider.stage}
+  region: ${opt:region, self:provider.region}
+  stackName: ${self:service}-${self:custom.stage}
+  prune:
+    automatic: true
+    number: 1
+
+provider:
+  name: aws
+  runtime: python3.6
+  stage: dev
+  region: us-west-2
+  timeout: 30  # Default is 6.
+  environment:
+    LOG_LEVEL: INFO
+
+  s3:
+    templatesBucket:
+      name: $(self:custom.stackName)-templatesBucket
