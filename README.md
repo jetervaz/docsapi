@@ -1,6 +1,7 @@
 # Docs API
 API to manage DOCX templates and generate documents based on them
 
+[![Build and Deploy](https://github.com/jetervaz/docsapi/actions/workflows/build_deploy_dev.yml/badge.svg)](https://github.com/jetervaz/docsapi/actions/workflows/build_deploy_dev.yml)
 
 ## Development
 
