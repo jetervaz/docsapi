@@ -8,7 +8,7 @@
 #
 
 
-name: Build and Deploy
+name: Build and Deploy to Dev
 on:
   push:
     branches:

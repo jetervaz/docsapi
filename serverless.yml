@@ -23,4 +23,4 @@ provider:
 
   s3:
     templatesBucket:
-      name: $(self:custom.stackName)-templatesBucket
+      name: $(self:custom.stackName)-file-storage
